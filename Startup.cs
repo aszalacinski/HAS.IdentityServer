@@ -13,14 +13,21 @@ namespace HAS.IdentityServer
 {
     public class Startup
     {
-        public IHostingEnvironment Environment { get; }
-        public IConfiguration Configuration { get; }
-
-        public Startup(IHostingEnvironment environment)
+        public Startup(IHostingEnvironment env)
         {
-            Environment = environment;
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+
+            builder.AddEnvironmentVariables();
+            Configuration = builder.Build();
+            Environment = env;
         }
 
+        public IHostingEnvironment Environment { get; }
+        public IConfiguration Configuration { get; }
+        
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<CloudSettings>(Configuration.GetSection("CloudSettings"));
