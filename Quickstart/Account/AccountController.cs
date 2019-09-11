@@ -30,6 +30,7 @@ namespace HAS.IdentityServer
     [AllowAnonymous]
     public class AccountController : Controller
     {
+        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IClientStore _clientStore;
@@ -41,9 +42,11 @@ namespace HAS.IdentityServer
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
-            UserManager<IdentityUser> userManager)
+            UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
             _interaction = interaction;
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
@@ -107,69 +110,44 @@ namespace HAS.IdentityServer
 
             if (ModelState.IsValid)
             {
-                // validate username/password against in-memory store
-                var user = await _userManager.FindByNameAsync(model.Username);
-                if (user != null)
+                var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: true);
+                if (result.Succeeded)
                 {
-                    if (await _userManager.CheckPasswordAsync(user, model.Password))
+                    var user = await _userManager.FindByNameAsync(model.Username);
+                    await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.ClientId));
+
+                    if (context != null)
                     {
-                        await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName));
-
-                        // only set explicit expiration here if user chooses "remember me". 
-                        // otherwise we rely upon expiration configured in cookie middleware.
-                        AuthenticationProperties props = null;
-                        if (AccountOptions.AllowRememberLogin && model.RememberLogin)
+                        if (await _clientStore.IsPkceClientAsync(context.ClientId))
                         {
-                            props = new AuthenticationProperties
-                            {
-                                IsPersistent = true,
-                                ExpiresUtc = DateTimeOffset.UtcNow.Add(AccountOptions.RememberMeLoginDuration)
-                            };
-                        };
-
-                        // issue authentication cookie with subject ID and username
-                        await HttpContext.SignInAsync(user.Id, user.UserName, props);
-
-                        if (context != null)
-                        {
-                            if (await _clientStore.IsPkceClientAsync(context.ClientId))
-                            {
-                                // if the client is PKCE then we assume it's native, so this change in how to
-                                // return the response is for better UX for the end user.
-                                return View("Redirect", new RedirectViewModel { RedirectUrl = model.ReturnUrl });
-                            }
-
-                            // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
-                            return Redirect(model.ReturnUrl);
+                            // if the client is PKCE then we assume it's native, so this change in how to
+                            // return the response is for better UX for the end user.
+                            return View("Redirect", new RedirectViewModel { RedirectUrl = model.ReturnUrl });
                         }
 
-                        // request for a local page
-                        if (Url.IsLocalUrl(model.ReturnUrl))
-                        {
-                            return Redirect(model.ReturnUrl);
-                        }
-                        else if (string.IsNullOrEmpty(model.ReturnUrl))
-                        {
-                            return Redirect("~/");
-                        }
-                        else
-                        {
-                            // user might have clicked on a malicious link - should be logged
-                            throw new Exception("invalid return URL");
-                        }
+                        // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
+                        return Redirect(model.ReturnUrl);
+                    }
+
+                    // request for a local page
+                    if (Url.IsLocalUrl(model.ReturnUrl))
+                    {
+                        return Redirect(model.ReturnUrl);
+                    }
+                    else if (string.IsNullOrEmpty(model.ReturnUrl))
+                    {
+                        return Redirect("~/");
                     }
                     else
                     {
-                        await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "Invalid password", true));
+                        // user might have clicked on a malicious link - should be logged
+                        throw new Exception("invalid return URL");
                     }
                 }
-                else
-                {
-                    await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "Invalid username", true));
-                }
-            }
 
-            ModelState.AddModelError(string.Empty, "Invalid username or password");
+                await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials", clientId: context?.ClientId));
+                ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
+            }
 
             // something went wrong, show form with error
             var vm = await BuildLoginViewModelAsync(model);

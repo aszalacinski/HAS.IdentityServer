@@ -58,6 +58,7 @@ namespace HAS.IdentityServer
             }
             else
             {
+                // TODO: Get this working
                 throw new Exception("need to configure key material");
             }
         }
