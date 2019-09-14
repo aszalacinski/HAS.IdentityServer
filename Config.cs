@@ -68,8 +68,7 @@ namespace HAS.IdentityServer
                     AllowedScopes = { "MPY.Profile", "MPY.Content" }
 
                 },
-
-                // OpenId Connect Implicit Flow client sample - use for MVC style
+                // OpenId Connect Implicit Flow client sample - use for browser based apps - front channel only calling apis directly
                 new Client
                 {
                     ClientId = "mvcExample",
@@ -90,7 +89,41 @@ namespace HAS.IdentityServer
                         IdentityServerConstants.StandardScopes.Profile
                     }
                 },
+                // OpenId Connect Hybrid Flow client sample - use for server based apps - front channel/back channel - back channel is calling apis directly
+                 new Client
+                {
+                    ClientId = "mvcHybrid",
+                    ClientName = "MVC Hybrid Client",
 
+                    // this allows server to server api calls not in a context of a user
+                    AllowedGrantTypes = GrantTypes.Hybrid,
+
+                    ClientSecrets =
+                    {
+                        new Secret("511536EF-F270-4058-80CA-1C89C192F623".Sha256())
+                    },
+
+                    // enable/disable consent with this flag
+                    RequireConsent = false,
+
+                    // where to redirect to after login (redirect to calling application)
+                    RedirectUris = { "http://<calling app>/signin-oidc" },
+                    FrontChannelLogoutUri = "http://<calling app>/signout-oidc",
+
+                    // where to redirect to after logout
+                    PostLogoutRedirectUris = { "http://<calling app>/signout-callback-oidc" },
+
+                    AllowedScopes =
+                     {
+                         IdentityServerConstants.StandardScopes.OpenId,
+                         IdentityServerConstants.StandardScopes.Profile,
+                         "MPY.Profile",
+                         "MPY.Content"
+                     },
+
+                    // permits requesting refresh tokens for long lived API access
+                    AllowOfflineAccess = true
+                },
                 // POSTMAN
                 new Client
                 {
@@ -123,6 +156,41 @@ namespace HAS.IdentityServer
                     },
 
 
+                },
+                // MyPractice.Yoga Content Management App - Implicit Flow 
+                new Client
+                {
+                    ClientId = "MPY.ContentManagement.App",
+                    ClientName = "MyPractice.Yoga Content Management App for Instructors",
+
+                    // this allows server to server api calls not in a context of a user
+                    AllowedGrantTypes = GrantTypes.Hybrid,
+
+                    ClientSecrets =
+                    {
+                        new Secret("4EB30921-C28D-4F61-8D80-5BBE7BAEE6EE".Sha256())
+                    },
+
+                    // enable/disable consent with this flag
+                    RequireConsent = false,
+
+                    // where to redirect to after login (redirect to calling application)
+                    RedirectUris = { "http://localhost:4000/signin-oidc" },
+                    FrontChannelLogoutUri = "https://localhost:4000/signout-oidc",
+
+                    // where to redirect to after logout
+                    PostLogoutRedirectUris = { "http://localhost:4000/signout-callback-oidc" },
+
+                    AllowedScopes = new List<string>
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "MPY.Profile",
+                        "MPY.Content"
+                    },
+
+                    // permits requesting refresh tokens for long lived API access
+                    AllowOfflineAccess = true
                 }
             };
         }

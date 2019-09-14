@@ -4,23 +4,24 @@
     "anonymousAuthentication": true,
     "iisExpress": {
       "applicationUrl": "http://localhost:5000",
-      "sslPort": 5000
+      "sslPort": 0
     }
   },
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
-      "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "TOKEN_SIGNING_DNS_NAME": "localhost",
+        "TOKEN_SIGNING_PASSWORD": "ewtam*2MsHW3E4Q4b7"
       }
     },
     "SelfHost": {
       "commandName": "Project",
       "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
         "TOKEN_SIGNING_DNS_NAME": "localhost",
-        "TOKEN_SIGNING_PASSWORD": "ewtam*2MsHW3E4Q4b7",
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "TOKEN_SIGNING_PASSWORD": "ewtam*2MsHW3E4Q4b7"
       },
       "applicationUrl": "http://localhost:5000"
     },
@@ -28,8 +29,11 @@
       "commandName": "Docker",
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "environmentVariables": {
+        "TOKEN_SIGNING_DNS_NAME": "localhost",
+        "TOKEN_SIGNING_PASSWORD": "ewtam*2MsHW3E4Q4b7",
         "ASPNETCORE_URLS": "https://+:443;http://+:80",
-        "ASPNETCORE_HTTPS_PORT": "5000"
+        "ASPNETCORE_HTTPS_PORT": "5000",
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "httpPort": 5000,
       "useSSL": true,
