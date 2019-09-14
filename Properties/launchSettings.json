@@ -18,6 +18,8 @@
     "SelfHost": {
       "commandName": "Project",
       "environmentVariables": {
+        "TOKEN_SIGNING_DNS_NAME": "localhost",
+        "TOKEN_SIGNING_PASSWORD": "ewtam*2MsHW3E4Q4b7",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://localhost:5000"
