@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 
 namespace HAS.IdentityServer
 {
-    public class CloudSettings
+    public partial class CloudSettings
     {
         public string DBConnectionString_MongoDB { get; set; }
         public string DBConnectionString_MongoDB_DatabaseName { get; set; }
+
     }
 }

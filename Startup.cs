@@ -43,7 +43,14 @@ namespace HAS.IdentityServer
                 return UserStore<IdentityUser>.CreateAsync(database).GetAwaiter().GetResult();
             });
 
-            services.AddIdentity<IdentityUser>();
+            services.AddMPYProfileService();
+
+            services.AddIdentity<IdentityUser>(options =>
+            {
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.SignIn.RequireConfirmedEmail = true;
+            });
 
             services.AddMvc().SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1);
 
@@ -51,7 +58,8 @@ namespace HAS.IdentityServer
                 .AddInMemoryIdentityResources(Config.GetIdentityResources())
                 .AddInMemoryApiResources(Config.GetApis())
                 .AddInMemoryClients(Config.GetClients())
-                .AddAspNetIdentity<IdentityUser>();
+                .AddAspNetIdentity<IdentityUser>()
+                .AddProfileService<HASIdentityProfileService>();
             builder.AddSigningCredential(GenerateSelfSignedServerCert("HAS.IdentityServer"));
         }
 
