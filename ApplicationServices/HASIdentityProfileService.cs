@@ -43,7 +43,7 @@ namespace HAS.IdentityServer
             var claims = principal.Claims.ToList();
             claims = claims.Where(claim => context.RequestedClaimTypes.Contains(claim.Type)).ToList();
             claims.Add(new Claim(JwtClaimTypes.GivenName, user.UserName));
-
+            
             if(profile.IsInstructor())
             {
                 claims.Add(new Claim(JwtClaimTypes.Role, "instructor"));
@@ -53,9 +53,34 @@ namespace HAS.IdentityServer
                 claims.Add(new Claim(JwtClaimTypes.Role, "student"));
             }
 
+            if(IsAdminEmailAddress(user.Email.NormalizedValue))
+            {
+                claims.Add(new Claim(JwtClaimTypes.Role, "admin"));
+            }
+
+            if(IsSuperAdminEmail(user.Email.NormalizedValue))
+            {
+                claims.Add(new Claim(JwtClaimTypes.Role, "superadmin"));
+            }
+
             claims.Add(new Claim(IdentityServerConstants.StandardScopes.Email, user.Email.NormalizedValue));
 
             context.IssuedClaims = claims;
+        }
+
+        private List<string> SuperAdminEmailAddresses = new List<string> { "aarron.szalacinski@happyappsoftware.com", "tammy.naylor@happyappsoftware.com" }
+        private List<string> AdminEmailDomains = new List<string> { "happyappsoftware.com" };
+
+        private bool IsAdminEmailAddress(string email)
+        {
+            var domain = email.Split('@')[1];
+
+            return AdminEmailDomains.Any(x => x.ToUpper() == domain.ToUpper());
+        }
+
+        private bool IsSuperAdminEmail(string email)
+        {
+            return SuperAdminEmailAddresses.Any(x => x.ToUpper() == email.ToUpper());
         }
 
         public async Task IsActiveAsync(IsActiveContext context)

@@ -157,7 +157,7 @@ namespace HAS.IdentityServer
 
 
                 },
-                // MyPractice.Yoga Content Management App - Implicit Flow 
+                // MyPractice.Yoga - Implicit Flow 
                 new Client
                 {
                     ClientId = "MPY.ContentManagement.App",
@@ -191,6 +191,23 @@ namespace HAS.IdentityServer
 
                     // permits requesting refresh tokens for long lived API access
                     AllowOfflineAccess = true
+                },
+                // MyPractive.Yoga - Client Credentials - Registration Event Job
+                new Client
+                {
+                     ClientId = "MPY.RegistrationEvent.Service",
+
+                    // no interactive user, use the clientid/secret for authentication
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+
+                    // secrets for authentication
+                    ClientSecrets =
+                    {
+                        new Secret("06CCFD72-563C-4EED-9262-7F5637BAFE17".Sha256())
+                    },
+
+                    // scopes that client has access to
+                    AllowedScopes = { "MPY.Profile" }
                 }
             };
         }
