@@ -205,8 +205,23 @@ namespace HAS.IdentityServer
                     {
                         new Secret("06CCFD72-563C-4EED-9262-7F5637BAFE17".Sha256())
                     },
-
+                    
                     // scopes that client has access to
+                    AllowedScopes = { "MPY.Profile" }
+                },
+                // MyPractice.Yoga - Client Credentials - MPY.Profile Middleware
+                // allows for middleware client to talk to Profile API
+                new Client
+                {
+                    ClientId = "MPY.Profile.Middleware",
+
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+
+                    ClientSecrets =
+                    {
+                        new Secret("F1EF0F7B-E16A-4D1D-844C-2A880D1EB139".Sha256())
+                    },
+
                     AllowedScopes = { "MPY.Profile" }
                 }
             };
