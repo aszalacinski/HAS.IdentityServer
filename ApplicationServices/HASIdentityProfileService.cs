@@ -68,7 +68,7 @@ namespace HAS.IdentityServer
             context.IssuedClaims = claims;
         }
 
-        private List<string> SuperAdminEmailAddresses = new List<string> { "aarron.szalacinski@happyappsoftware.com", "tammy.naylor@happyappsoftware.com" }
+        private List<string> SuperAdminEmailAddresses = new List<string> { "aarron.szalacinski@happyappsoftware.com", "tammy.naylor@happyappsoftware.com" };
         private List<string> AdminEmailDomains = new List<string> { "happyappsoftware.com" };
 
         private bool IsAdminEmailAddress(string email)
