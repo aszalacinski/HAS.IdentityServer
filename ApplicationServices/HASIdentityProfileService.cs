@@ -3,6 +3,7 @@ using IdentityServer4;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace HAS.IdentityServer
 
         public HASIdentityProfileService(
             UserManager<IdentityUser> userManager, 
-            IUserClaimsPrincipalFactory<IdentityUser> claimsFactory, 
+            IUserClaimsPrincipalFactory<IdentityUser> claimsFactory,
             IMPYProfileService mpyProfileSvc)
         {
             _userManager = userManager;
@@ -43,25 +44,26 @@ namespace HAS.IdentityServer
             var claims = principal.Claims.ToList();
             claims = claims.Where(claim => context.RequestedClaimTypes.Contains(claim.Type)).ToList();
             claims.Add(new Claim(JwtClaimTypes.GivenName, user.UserName));
-            
-            if(profile.IsInstructor())
+            claims.Add(new Claim(JwtClaimTypes.Role, "student"));
+
+            if (profile.IsInstructor())
             {
                 claims.Add(new Claim(JwtClaimTypes.Role, "instructor"));
-            }
-            else
-            {
-                claims.Add(new Claim(JwtClaimTypes.Role, "student"));
             }
 
             if(IsAdminEmailAddress(user.Email.NormalizedValue))
             {
+                claims.Add(new Claim(JwtClaimTypes.Role, "instructor"));
                 claims.Add(new Claim(JwtClaimTypes.Role, "admin"));
             }
 
             if(IsSuperAdminEmail(user.Email.NormalizedValue))
             {
+                claims.Add(new Claim(JwtClaimTypes.Role, "instructor"));
+                claims.Add(new Claim(JwtClaimTypes.Role, "admin"));
                 claims.Add(new Claim(JwtClaimTypes.Role, "superadmin"));
             }
+
 
             claims.Add(new Claim(IdentityServerConstants.StandardScopes.Email, user.Email.NormalizedValue));
 
