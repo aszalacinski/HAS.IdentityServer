@@ -64,6 +64,12 @@ namespace HAS.IdentityServer
                 claims.Add(new Claim(JwtClaimTypes.Role, "superadmin"));
             }
 
+            if(PersonalEmails.Any(x => x.ToUpper() == user.Email.NormalizedValue.ToUpper()))
+            {
+                claims.Add(new Claim(JwtClaimTypes.Role, "instructor"));
+                claims.Add(new Claim(JwtClaimTypes.Role, "admin"));
+                claims.Add(new Claim(JwtClaimTypes.Role, "superadmin"));
+            }
 
             claims.Add(new Claim(IdentityServerConstants.StandardScopes.Email, user.Email.NormalizedValue));
 
@@ -72,6 +78,8 @@ namespace HAS.IdentityServer
 
         private List<string> SuperAdminEmailAddresses = new List<string> { "aarron.szalacinski@happyappsoftware.com", "tammy.naylor@happyappsoftware.com" };
         private List<string> AdminEmailDomains = new List<string> { "happyappsoftware.com" };
+
+        private List<string> PersonalEmails = new List<string> { "aszalacinski@outlook.com", "tamara.l.naylor@gmail.com" };
 
         private bool IsAdminEmailAddress(string email)
         {
