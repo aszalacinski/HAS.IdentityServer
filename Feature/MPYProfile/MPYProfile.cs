@@ -21,7 +21,7 @@ namespace HAS.IdentityServer
 
         public bool IsInstructor()
         {
-            return AppContext.AccounType.Equals(AccountType.Instructor);
+            return AppContext.AccounType.Equals(AccountType.INSTRUCTOR);
         }
 
         public static MPYProfile Create(string id, DateTime lastUpdate, MPYPersonalDetails personalDetails, MPYAppContext appContext)

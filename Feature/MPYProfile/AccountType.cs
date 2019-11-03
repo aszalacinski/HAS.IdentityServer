@@ -7,7 +7,7 @@ namespace HAS.IdentityServer
 {
     public enum AccountType
     {
-        Student,
-        Instructor
+        STUDENT,
+        INSTRUCTOR
     }
 }
