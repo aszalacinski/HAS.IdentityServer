@@ -3,6 +3,7 @@ using IdentityServer4;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using static HAS.IdentityServer.GetProfileByEmailAddress;
 using IdentityUser = Microsoft.AspNetCore.Identity.MongoDb.IdentityUser;
 
 
@@ -19,16 +21,16 @@ namespace HAS.IdentityServer
     {
         private readonly IUserClaimsPrincipalFactory<IdentityUser> _claimsFactory;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IMPYProfileService _mpyProfileSvc;
+        private readonly IMediator _mediator;
 
         public HASIdentityProfileService(
             UserManager<IdentityUser> userManager, 
             IUserClaimsPrincipalFactory<IdentityUser> claimsFactory,
-            IMPYProfileService mpyProfileSvc)
+            IMediator mediator)
         {
             _userManager = userManager;
             _claimsFactory = claimsFactory;
-            _mpyProfileSvc = mpyProfileSvc;
+            _mediator = mediator;
         }
 
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
@@ -39,8 +41,8 @@ namespace HAS.IdentityServer
             var principal = await _claimsFactory.CreateAsync(user);
 
             // get mpy profile details
-            var profile = await _mpyProfileSvc.GetProfileByEmailAddress(user.Email.NormalizedValue);
-            
+            var profile = await _mediator.Send(new GetProfileByEmailAddressQuery(user.Email.NormalizedValue));
+
             var claims = principal.Claims.ToList();
             claims = claims.Where(claim => context.RequestedClaimTypes.Contains(claim.Type)).ToList();
             claims.Add(new Claim(JwtClaimTypes.GivenName, user.UserName));

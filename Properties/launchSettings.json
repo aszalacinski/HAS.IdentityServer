@@ -11,17 +11,13 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "TOKEN_SIGNING_DNS_NAME": "localhost",
-        "TOKEN_SIGNING_PASSWORD": "ewtam*2MsHW3E4Q4b7"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "SelfHost": {
       "commandName": "Project",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "TOKEN_SIGNING_DNS_NAME": "localhost",
-        "TOKEN_SIGNING_PASSWORD": "ewtam*2MsHW3E4Q4b7"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://localhost:5000"
     },
@@ -29,8 +25,6 @@
       "commandName": "Docker",
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "environmentVariables": {
-        "TOKEN_SIGNING_DNS_NAME": "localhost",
-        "TOKEN_SIGNING_PASSWORD": "ewtam*2MsHW3E4Q4b7",
         "ASPNETCORE_URLS": "https://+:443;http://+:80",
         "ASPNETCORE_HTTPS_PORT": "5000",
         "ASPNETCORE_ENVIRONMENT": "Development"

@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using AutoMapper;
+using HAS.IdentityServer.Data;
+using MediatR;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.MongoDb;
@@ -21,9 +24,13 @@ namespace HAS.IdentityServer
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+                .AddEnvironmentVariables();
 
-            builder.AddEnvironmentVariables();
+            if (env.IsDevelopment())
+            {
+                builder.AddUserSecrets<Startup>();
+            }
+
             Configuration = builder.Build();
             Environment = env;
         }
@@ -33,18 +40,18 @@ namespace HAS.IdentityServer
         
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CloudSettings>(Configuration.GetSection("CloudSettings"));
+            services.AddAutoMapper(typeof(Startup));
+            services.AddMediatR(typeof(Startup));
+
+            services.AddScoped<ProfileContext>();
+
             services.AddSingleton<IUserStore<IdentityUser>>(provider =>
             {
-                var options = provider.GetService<IOptions<CloudSettings>>();
-                var client = new MongoClient(options.Value.DBConnectionString_MongoDB);
-                var database = client.GetDatabase(options.Value.DBConnectionString_MongoDB_DatabaseName);
-
+                var client = new MongoClient(Configuration["MongoDB:Identity:ConnectionString"]);
+                var database = client.GetDatabase(Configuration["MongoDB:Identity:Database:Name"]);
                 return UserStore<IdentityUser>.CreateAsync(database).GetAwaiter().GetResult();
             });
-
-            services.AddMPYProfileService();
-
+            
             services.AddIdentity<IdentityUser>(options =>
             {
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
@@ -59,8 +66,8 @@ namespace HAS.IdentityServer
                 .AddInMemoryApiResources(Config.GetApis())
                 .AddInMemoryClients(Config.GetClients())
                 .AddAspNetIdentity<IdentityUser>()
-                .AddProfileService<HASIdentityProfileService>();
-            builder.AddSigningCredential(GenerateSelfSignedServerCert("HAS.IdentityServer"));
+                .AddProfileService<HASIdentityProfileService>()
+                .AddSigningCredential(GenerateSelfSignedServerCert("HAS.IdentityServer"));
         }
 
         public void Configure(IApplicationBuilder app)
@@ -79,12 +86,12 @@ namespace HAS.IdentityServer
 
         private X509Certificate2 GenerateSelfSignedServerCert(string certificateName)
         {
-            var certPassword = System.Environment.GetEnvironmentVariable("TOKEN_SIGNING_PASSWORD");
+            var certPassword = Configuration["MPY:IdentityServer:X509CertToken:Password"];
             if(string.IsNullOrEmpty(certPassword))
             {
                 throw new ArgumentNullException("Token Signing Certificate Password needs to be set");
             }
-            var dnsName = System.Environment.GetEnvironmentVariable("TOKEN_SIGNING_DNS_NAME");
+            var dnsName = Configuration["MPY:IdentityServer:X509CertToken:DNSName"];
             if(string.IsNullOrEmpty(dnsName))
             {
                 throw new ArgumentNullException("Token Signing DNS Name needs to be set.");
