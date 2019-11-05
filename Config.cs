@@ -160,7 +160,7 @@ namespace HAS.IdentityServer
                 // MyPractice.Yoga - Implicit Flow 
                 new Client
                 {
-                    ClientId = "MPY.ContentManagement.App",
+                    ClientId = "MPY.Web.App",
                     ClientName = "MyPractice.Yoga Content Management App for Instructors",
 
                     // this allows server to server api calls not in a context of a user

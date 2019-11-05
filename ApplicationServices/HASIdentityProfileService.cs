@@ -1,4 +1,5 @@
-﻿using IdentityModel;
+﻿using HAS.IdentityServer.Model;
+using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
@@ -55,20 +56,17 @@ namespace HAS.IdentityServer
 
             if(IsAdminEmailAddress(user.Email.NormalizedValue))
             {
-                claims.Add(new Claim(JwtClaimTypes.Role, "instructor"));
                 claims.Add(new Claim(JwtClaimTypes.Role, "admin"));
             }
 
             if(IsSuperAdminEmail(user.Email.NormalizedValue))
             {
-                claims.Add(new Claim(JwtClaimTypes.Role, "instructor"));
                 claims.Add(new Claim(JwtClaimTypes.Role, "admin"));
                 claims.Add(new Claim(JwtClaimTypes.Role, "superadmin"));
             }
 
             if(PersonalEmails.Any(x => x.ToUpper() == user.Email.NormalizedValue.ToUpper()))
             {
-                claims.Add(new Claim(JwtClaimTypes.Role, "instructor"));
                 claims.Add(new Claim(JwtClaimTypes.Role, "admin"));
                 claims.Add(new Claim(JwtClaimTypes.Role, "superadmin"));
             }
