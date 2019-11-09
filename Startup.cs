@@ -119,7 +119,12 @@ namespace HAS.IdentityServer
 
                 request.CertificateExtensions.Add(sanBuilder.Build());
 
-                var certificate = request.CreateSelfSigned(new DateTimeOffset(DateTime.UtcNow.AddDays(-1)), new DateTimeOffset(DateTime.UtcNow.AddDays(3650)));
+                //var certificate = request.CreateSelfSigned(new DateTimeOffset(DateTime.UtcNow.AddDays(-1)), new DateTimeOffset(DateTime.UtcNow.AddDays(365)));
+
+                var yesterday = DateTime.Today.AddDays(-1).ToUniversalTime();
+                var future = DateTime.Today.AddDays(365).ToUniversalTime();
+
+                var certificate = request.CreateSelfSigned(new DateTimeOffset(yesterday), new DateTimeOffset(future));
                 certificate.FriendlyName = certificateName;
 
                 return new X509Certificate2(certificate.Export(X509ContentType.Pfx, certPassword), certPassword, X509KeyStorageFlags.MachineKeySet);
