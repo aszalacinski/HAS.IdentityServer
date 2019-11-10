@@ -27,6 +27,7 @@ namespace HAS.IdentityServer
             Configuration = configuration;
 
             var testConfig = Configuration["MPY:Version"];
+            var hasTestConfig = Configuration["HAS:Version"];
 
             Environment = env;
         }
@@ -89,7 +90,7 @@ namespace HAS.IdentityServer
 
             var kv = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
 
-            var certificateSecret = kv.GetSecretAsync("https://happyappsoftware-base.vault.azure.net/", "mypractice-jwt-signing-cert").GetAwaiter().GetResult();
+            var certificateSecret = kv.GetSecretAsync(Configuration["HAS:SigningCert:Vault"], Configuration["HAS:SigningCert:CertName"]).GetAwaiter().GetResult();
 
             var privateKeyBytes = Convert.FromBase64String(certificateSecret.Value);
 
