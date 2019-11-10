@@ -4,10 +4,12 @@
 
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 using System;
+using System.IO;
 
 namespace HAS.IdentityServer
 {
@@ -23,6 +25,26 @@ namespace HAS.IdentityServer
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             return WebHost.CreateDefaultBuilder(args)
+                    .ConfigureAppConfiguration((ctx, builder) =>
+                    {
+                        builder.SetBasePath(Directory.GetCurrentDirectory())
+                            .AddEnvironmentVariables();
+
+                        var config = builder.Build();
+
+                        builder.AddAzureKeyVault(
+                            $"https://{config["AzureKeyVault:vault"]}.vault.azure.net/",
+                            config["AzureKeyVault:clientId"],
+                            config["AzureKeyVault:clientSecret"]
+                            );
+
+                        if (ctx.HostingEnvironment.IsDevelopment())
+                        {
+                            builder.AddUserSecrets<Startup>();
+                        }
+
+
+                    })
                     .UseStartup<Startup>()
                     .UseSerilog((context, configuration) =>
                     {

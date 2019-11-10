@@ -19,19 +19,12 @@ namespace HAS.IdentityServer
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
+            Configuration = configuration;
 
-            if (env.IsDevelopment())
-            {
-                builder.AddUserSecrets<Startup>();
-            }
+            var testConfig = Configuration["MPY:Version"];
 
-            Configuration = builder.Build();
             Environment = env;
         }
 
