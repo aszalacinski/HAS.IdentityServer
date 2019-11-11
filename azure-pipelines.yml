@@ -35,5 +35,5 @@ steps:
 - task: PublishPipelineArtifact@1
   inputs:
     targetPath: '$(Pipeline.Workspace)'
-    artifact: 'WebApp'
+    artifact: 'IdentityApp'
     publishLocation: 'pipeline'
