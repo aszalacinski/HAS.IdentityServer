@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- production
+- master
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -13,24 +13,11 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: DownloadPackage@1
+- task: DotNetCoreCLI@2
   inputs:
-    packageType: 'nuget'
-    feed: '/5b1d3f53-8c34-47be-97da-d20b2bfbb46a'
-    view: 'ccd9551f-8b35-486a-90b7-df84fc88d752'
-    definition: '3aa9d91e-11ee-419c-8132-4fb8754a0665'
-    version: '1.0.0'
-    downloadPath: '$(System.ArtifactsDirectory)'
+    command: 'restore'
+    feedsToUse: 'select'
+    vstsFeed: '5b1d3f53-8c34-47be-97da-d20b2bfbb46a'
     
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
-
-- task: AzureRmWebAppDeployment@4
-  inputs:
-    ConnectionType: 'AzureRM'
-    azureSubscription: 'Pay-As-You-Go(a149e00b-bac3-477d-a570-5639a43b2b66)'
-    appType: 'webAppLinux'
-    WebAppName: 'has-identity'
-    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
-    RuntimeStack: 'DOTNETCORE|2.2'
-    AppSettings: '-Azure.KeyVault.HAS.ClientId 86ff247d-19b5-4e65-acee-18a82aef1357 -Azure.KeyVault.HAS.ClientSecret 7aJoyvo8s9NX1KGvyaSSD:l:u-BYxZy@ -Azure.KeyVault.HAS.Vault happyappsoftware-base -Azure.KeyVault.MPY.ClientId 86ff247d-19b5-4e65-acee-18a82aef1357 -Azure.KeyVault.MPY.ClientSecret 7aJoyvo8s9NX1KGvyaSSD:l:u-BYxZy@ -Azure.KeyVault.MPY.Vault my-practice-yoga'
