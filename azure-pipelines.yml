@@ -13,14 +13,12 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: DownloadPackage@1
+- task: NuGetCommand@2
   inputs:
-    packageType: 'nuget'
-    feed: '/5b1d3f53-8c34-47be-97da-d20b2bfbb46a'
-    view: 'ccd9551f-8b35-486a-90b7-df84fc88d752'
-    definition: '3aa9d91e-11ee-419c-8132-4fb8754a0665'
-    version: '1.0.0'
-    downloadPath: '$(System.ArtifactsDirectory)'
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+    vstsFeed: '5b1d3f53-8c34-47be-97da-d20b2bfbb46a'
     
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
