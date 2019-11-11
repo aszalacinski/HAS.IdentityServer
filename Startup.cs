@@ -63,7 +63,7 @@ namespace HAS.IdentityServer
             var builder = services.AddIdentityServer()
                 .AddInMemoryIdentityResources(Config.GetIdentityResources())
                 .AddInMemoryApiResources(Config.GetApis())
-                .AddInMemoryClients(Config.GetClients())
+                .AddInMemoryClients(Config.GetClients(Configuration))
                 .AddAspNetIdentity<IdentityUser>()
                 .AddProfileService<HASIdentityProfileService>()
                 .AddSigningCredential(cert)

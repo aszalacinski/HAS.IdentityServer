@@ -4,7 +4,7 @@
     "anonymousAuthentication": true,
     "iisExpress": {
       "applicationUrl": "http://localhost:5000",
-      "sslPort": 0
+      "sslPort": 5000
     }
   },
   "profiles": {
@@ -19,19 +19,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:5000"
-    },
-    "Docker": {
-      "commandName": "Docker",
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
-      "environmentVariables": {
-        "ASPNETCORE_URLS": "https://+:443;http://+:80",
-        "ASPNETCORE_HTTPS_PORT": "5000",
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "httpPort": 5000,
-      "useSSL": true,
-      "sslPort": 5000
+      "applicationUrl": "https://localhost:5000;http://localhost:5001"
     }
   }
 }

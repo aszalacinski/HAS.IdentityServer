@@ -5,6 +5,7 @@
 using IdentityServer4;
 using IdentityServer4.Models;
 using IdentityServer4.Test;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace HAS.IdentityServer
@@ -29,8 +30,11 @@ namespace HAS.IdentityServer
             };
         }
 
-        public static IEnumerable<Client> GetClients()
+        public static IEnumerable<Client> GetClients(IConfiguration configuration)
         {
+
+            var webApp = configuration["MPY:Web:Authority"];
+            var demo = configuration["Demo"];
 
             return new List<Client>
             {
@@ -175,11 +179,11 @@ namespace HAS.IdentityServer
                     RequireConsent = false,
 
                     // where to redirect to after login (redirect to calling application)
-                    RedirectUris = { "http://localhost:4000/signin-oidc" },
-                    FrontChannelLogoutUri = "https://localhost:4000/signout-oidc",
+                    RedirectUris = { $"{configuration["MPY:Web:Authority"]}signin-oidc" },
+                    FrontChannelLogoutUri = $"{configuration["MPY:Web:Authority"]}signout-oidc",
 
                     // where to redirect to after logout
-                    PostLogoutRedirectUris = { "http://localhost:4000/signout-callback-oidc" },
+                    PostLogoutRedirectUris = { $"{configuration["MPY:Web:Authority"]}signout-callback-oidc" },
 
                     AllowedScopes = new List<string>
                     {
