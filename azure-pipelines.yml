@@ -13,10 +13,9 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: NuGetCommand@2
+- task: DotNetCoreCLI@2
   inputs:
     command: 'restore'
-    restoreSolution: '**/*.sln'
     feedsToUse: 'select'
     vstsFeed: '5b1d3f53-8c34-47be-97da-d20b2bfbb46a'
     
