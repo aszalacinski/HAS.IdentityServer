@@ -1,0 +1,26 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- production
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'dotnet build $(buildConfiguration)'
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Pay-As-You-Go(a149e00b-bac3-477d-a570-5639a43b2b66)'
+    appType: 'webAppLinux'
+    WebAppName: 'has-identity'
+    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    RuntimeStack: 'DOTNETCORE|2.2'
+    AppSettings: '-Azure.KeyVault.HAS.ClientId 86ff247d-19b5-4e65-acee-18a82aef1357 -Azure.KeyVault.HAS.ClientSecret 7aJoyvo8s9NX1KGvyaSSD:l:u-BYxZy@ -Azure.KeyVault.HAS.Vault happyappsoftware-base -Azure.KeyVault.MPY.ClientId 86ff247d-19b5-4e65-acee-18a82aef1357 -Azure.KeyVault.MPY.ClientSecret 7aJoyvo8s9NX1KGvyaSSD:l:u-BYxZy@ -Azure.KeyVault.MPY.Vault my-practice-yoga'
