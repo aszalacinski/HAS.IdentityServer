@@ -13,8 +13,6 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
 - task: DownloadPackage@1
   inputs:
     packageType: 'nuget'
@@ -23,6 +21,10 @@ steps:
     definition: '3aa9d91e-11ee-419c-8132-4fb8754a0665'
     version: '1.0.0'
     downloadPath: '$(System.ArtifactsDirectory)'
+    
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'dotnet build $(buildConfiguration)'
+
 - task: AzureRmWebAppDeployment@4
   inputs:
     ConnectionType: 'AzureRM'
