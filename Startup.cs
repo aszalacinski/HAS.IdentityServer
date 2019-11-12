@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.MongoDb;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
@@ -38,15 +40,6 @@ namespace HAS.IdentityServer
         
         public void ConfigureServices(IServiceCollection services)
         {
-            if (!Environment.IsDevelopment())
-            {
-                services.AddHttpsRedirection(options =>
-                {
-                    options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
-                    options.HttpsPort = 443;
-                });
-            }
-
             services.AddAutoMapper(typeof(Startup));
             services.AddMediatR(typeof(Startup));
 
@@ -68,7 +61,19 @@ namespace HAS.IdentityServer
 
             var cert = GenerateSelfSignedServerCert();
 
-            services.AddMvc().SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1);
+            services.AddMvc(options => {
+                options.SslPort = 443;
+                options.Filters.Add(new RequireHttpsAttribute());
+            }).SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1);
+
+            // add this
+            services.AddAntiforgery(options =>
+            {
+                options.Cookie.Name = "_af";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.HeaderName = "X-XSRF-TOKEN";
+            });
 
             var builder = services.AddIdentityServer()
                 .AddInMemoryIdentityResources(Config.GetIdentityResources())
@@ -88,7 +93,7 @@ namespace HAS.IdentityServer
             }
             else
             {
-                app.UseHttpsRedirection();
+                app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
             }
 
             app.UseIdentityServer();
