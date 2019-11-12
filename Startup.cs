@@ -61,21 +61,13 @@ namespace HAS.IdentityServer
 
             var cert = GenerateSelfSignedServerCert();
 
-            services.AddMvc(options => {
-                options.SslPort = 443;
-                options.Filters.Add(new RequireHttpsAttribute());
-            }).SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1);
-
-            // add this
-            services.AddAntiforgery(options =>
+            services.AddMvc().SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1);
+            
+            var builder = services.AddIdentityServer(options =>
             {
-                options.Cookie.Name = "_af";
-                options.Cookie.HttpOnly = true;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.HeaderName = "X-XSRF-TOKEN";
-            });
-
-            var builder = services.AddIdentityServer()
+                options.PublicOrigin = Configuration["MPY:IdentityServer:Authority"];
+                options.IssuerUri = Configuration["MPY:IdentityServer:Authority"];
+            })
                 .AddInMemoryIdentityResources(Config.GetIdentityResources())
                 .AddInMemoryApiResources(Config.GetApis())
                 .AddInMemoryClients(Config.GetClients(Configuration))
@@ -90,10 +82,6 @@ namespace HAS.IdentityServer
             if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseRewriter(new RewriteOptions().AddRedirectToHttps());
             }
 
             app.UseIdentityServer();
