@@ -3,6 +3,7 @@ using HAS.IdentityServer.Data;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.MongoDb;
 using Microsoft.Azure.KeyVault;
@@ -37,6 +38,15 @@ namespace HAS.IdentityServer
         
         public void ConfigureServices(IServiceCollection services)
         {
+            if (!Environment.IsDevelopment())
+            {
+                services.AddHttpsRedirection(options =>
+                {
+                    options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+                    options.HttpsPort = 443;
+                });
+            }
+
             services.AddAutoMapper(typeof(Startup));
             services.AddMediatR(typeof(Startup));
 
@@ -75,6 +85,10 @@ namespace HAS.IdentityServer
             if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseHttpsRedirection();
             }
 
             app.UseIdentityServer();
