@@ -161,7 +161,8 @@ namespace HAS.IdentityServer
 
 
                 },
-                // MyPractice.Yoga - Implicit Flow 
+                // MyPractice.Yoga - Web App - Main Web app users interact with
+                // app is making calls on behalf of the user
                 new Client
                 {
                     ClientId = "MPY.Web.App",
@@ -224,6 +225,21 @@ namespace HAS.IdentityServer
                     ClientSecrets =
                     {
                         new Secret("F1EF0F7B-E16A-4D1D-844C-2A880D1EB139".Sha256())
+                    },
+
+                    AllowedScopes = { "MPY.Profile" }
+                },
+                // MyPractice.Yoga - Client Credentils - Registration App
+                // allows for registration app to talk to profile api
+                // doesn't need to be hybrid as the app doesn't need to make a call on behalf of a user
+                // user isn't known yet
+                new Client
+                {
+                    ClientId = "MPY.Registration.App",
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    ClientSecrets =
+                    {
+                        new Secret("5A82849A-EABD-484A-8AD9-878E45B0A454".Sha256())
                     },
 
                     AllowedScopes = { "MPY.Profile" }
