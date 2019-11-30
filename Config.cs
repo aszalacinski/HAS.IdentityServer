@@ -197,6 +197,42 @@ namespace HAS.IdentityServer
                     // permits requesting refresh tokens for long lived API access
                     AllowOfflineAccess = true
                 },
+                // MyPractice.Yoga - Web App - Development Main Web app users interact with
+                // app is making calls on behalf of the user
+                new Client
+                {
+                    ClientId = "MPY.Web.App.Dev",
+                    ClientName = "MyPractice.Yoga Content Management App for Instructors - Development",
+
+                    // this allows server to server api calls not in a context of a user
+                    AllowedGrantTypes = GrantTypes.Hybrid,
+
+                    ClientSecrets =
+                    {
+                        new Secret("9E11EE36-849E-4B17-9D0A-397A63166495".Sha256())
+                    },
+
+                    // enable/disable consent with this flag
+                    RequireConsent = false,
+
+                    // where to redirect to after login (redirect to calling application)
+                    RedirectUris = { $"https://localhost:4000/signin-oidc" },
+                    FrontChannelLogoutUri = $"https://localhost:4000/signout-oidc",
+
+                    // where to redirect to after logout
+                    PostLogoutRedirectUris = { $"https://localhost:4000/signout-callback-oidc" },
+
+                    AllowedScopes = new List<string>
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "MPY.Profile",
+                        "MPY.Content"
+                    },
+
+                    // permits requesting refresh tokens for long lived API access
+                    AllowOfflineAccess = true
+                },
                 // MyPractive.Yoga - Client Credentials - Registration Event Job
                 new Client
                 {
