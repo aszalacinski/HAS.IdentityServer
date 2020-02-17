@@ -237,8 +237,8 @@ namespace HAS.IdentityServer
                 // app is making calls on behalf of the user
                 new Client
                 {
-                    ClientId = "MPY.Web.App.Ngrok",
-                    ClientName = "MyPractice.Yoga Content Management App for Instructors - Ngrok",
+                    ClientId = "MPY.Web.App.Dev",
+                    ClientName = "MyPractice.Yoga Content Management App for Instructors - Dev",
 
                     // this allows server to server api calls not in a context of a user
                     AllowedGrantTypes = GrantTypes.Hybrid,
