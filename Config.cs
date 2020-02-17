@@ -233,6 +233,42 @@ namespace HAS.IdentityServer
                     // permits requesting refresh tokens for long lived API access
                     AllowOfflineAccess = true
                 },
+                // MyPractice.Yoga - Web App - NGrok Main Web app users interact with
+                // app is making calls on behalf of the user
+                new Client
+                {
+                    ClientId = "MPY.Web.App.Ngrok",
+                    ClientName = "MyPractice.Yoga Content Management App for Instructors - Ngrok",
+
+                    // this allows server to server api calls not in a context of a user
+                    AllowedGrantTypes = GrantTypes.Hybrid,
+
+                    ClientSecrets =
+                    {
+                        new Secret("9E11EE36-849E-4B17-9D0A-397A63166495".Sha256())
+                    },
+
+                    // enable/disable consent with this flag
+                    RequireConsent = false,
+
+                    // where to redirect to after login (redirect to calling application)
+                    RedirectUris = { $"https://mypractice.ngrok.io/signin-oidc" },
+                    FrontChannelLogoutUri = $"https://mypractice.ngrok.io/signout-oidc",
+
+                    // where to redirect to after logout
+                    PostLogoutRedirectUris = { $"https://mypractice.ngrok.io/signout-callback-oidc" },
+
+                    AllowedScopes = new List<string>
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "MPY.Profile",
+                        "MPY.Content"
+                    },
+
+                    // permits requesting refresh tokens for long lived API access
+                    AllowOfflineAccess = true
+                },
                 // MyPractive.Yoga - Client Credentials - Registration Event Job
                 new Client
                 {
